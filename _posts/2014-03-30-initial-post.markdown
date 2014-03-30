@@ -11,6 +11,9 @@ Dabei bleibt etwas Wichtiges erhalten: Jekyll generiert HTML-Dateien, die ich au
 
 Die Generik leidet etwas darunter, aber dafür sind die generierten Dateien schnell ausgeliefert.
 
+Der Aufbau der Seite ist etwas moderner geworden. An [knp.de] hatte ich schon lange Zeit keine Hand mehr angelegt. Daher war es höchste Zeit für einen Relaunch. Es ist aber noch nicht alles fertig: Kontakt und Impressum verweisen noch auf [kna-st.de].
+
 [Dirk]: http://www.dirkkoller.de
+[kna-st.de]: http://www.kna-st.de
 [knp.de]: http://www.knp.de
 [Jekyll]: http://jekyllrb.com
