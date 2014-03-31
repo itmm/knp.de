@@ -1,9 +1,11 @@
 ---
 layout: post
 title:  "Archiv: Zelluläre Automaten simulieren"
-date:   2014-03-30 21:45:00
+date:   2014-03-31 21:45:00
 Categories: archive, cellular
 ---
+
+Archiv-Einträge haben sich aus älteren Posts ergeben. Sie erscheinen hier in einem neuen Layout.
 
 Das folgende Programm in C++ simuliert einen endlichen Automaten.
 
@@ -48,13 +50,12 @@ Insgesamt werden
 
 viele Spalten ausgegeben. Wenn die Parameter nicht angegeben werden, dann wird `-39` für `--begin` und `40` für `--end` verwendet.
 
-Normalerweise wird für jedes gesetzte Bit ein `X` und für jedes gelöschte Bit ein `0` ausgegeben. Jede Zeile wird mit einem Zeilenvorschub terminiert. Dies kann über die Parameter `-1` oder `--bitset`, `-0` oder `--bitclear` und `-l` oder `--endofline` geändert werden.
+Für jedes gesetzte Bit wird eine `1` und für jedes gelöschte Bit eine `0` ausgegeben. Jede Zeile wird mit einem Zeilenvorschub terminiert.
 
-Folgender Aufruf gibt zum Beispiel die mittlere Spalte als Binärzahl zurück:
+Folgender Aufruf gibt zum Beispiel die mittlere Spalte als Binärzahl zurück (der `tr`-Aufruf entfernt die Zeilenumbrüche):
 
 ``` bash
-cellular --nr=30 --rows=400 --begin=0 --end=1 \
-  -11 -00 --endofline=
+cellular --nr=30 --rows=400 --begin=0 --end=1 | tr -d "\\n"
 ```
 
 Liefert das Ergebnis
@@ -66,5 +67,5 @@ Liefert das Ergebnis
 111110000001111111011001011011100000101100011011000110001110
 110110010101111111011010110110111101110010111011000100000000
 001101110010110010111100100110000111110000001011011001111001
-0000100111110000011010010110010010111010
+00001001111100000110100101100100101110101
 ```

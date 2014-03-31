@@ -6,10 +6,6 @@ static int NR = 30;
 static int BEGIN = -39;
 static int END = 40;
 static int ROWS = 60;
-static std::string BIT_SET = "X";
-static std::string BIT_CLEAR = "0";
-static bool CUSTOM_EOL = false;
-static std::string EOL;
 
 class Line {
 public:
@@ -31,7 +27,7 @@ private:
 };
 
 inline int Line::get(int i) const {
-  if (i < begin() || i >= end()) { return _empty; }
+  if (i < begin() || i >= end()) return _empty;
   return _data[i - begin()];
 }
 
@@ -42,22 +38,15 @@ void Line::set(int i, bool v) {
       _data.push_back(_empty);
     }
   }
-  else { _begin = i; }
+  else _begin = i; // first set defines leftmost
   _data.push_back(v);
 }
 
 void Line::print() const {
   for (int i = BEGIN; i < END; ++i) {
-    std::cout << (get(i)? BIT_SET: BIT_CLEAR);
+    std::cout << (get(i) ? "1": "0");
   }
-  if (CUSTOM_EOL)
-  {
-    std::cout << EOL;
-  }
-  else
-  {
-    std::cout << std::endl;
-  }
+  std::cout << std::endl;
 }
 
 int main(int argc, char **argv) {
@@ -67,35 +56,30 @@ int main(int argc, char **argv) {
       {"rows", required_argument, 0, 'r'},
       {"begin", required_argument, 0, 'b'},
       {"end", required_argument, 0, 'e'},
-      {"bitset", required_argument, 0, '1'},
-      {"bitclear", required_argument, 0, '0'},
-      {"endofline", required_argument, 0, 'l'},
-      {0, 0, 0, 0}
+      {0}
     };
 
     int option_index = 0;
-    int choice = getopt_long
-    (
-      argc, argv, "n:r:b:e:1:0:l:", long_options, &option_index
+    int choice = getopt_long(
+      argc, argv, "n:r:b:e:", long_options, &option_index
     );
 
-    if (choice == -1) { break; }
+    if (choice == -1) break;
     switch (choice) {
-      case 'n': { NR = atoi(optarg); break; }
-      case 'r': { ROWS = atoi(optarg); break; }
-      case 'b': { BEGIN = atoi(optarg); break; }
-      case 'e': { END = atoi(optarg); break; }
-      case '1': { BIT_SET = optarg; break; }
-      case '0': { BIT_CLEAR = optarg; break; }
-      case 'l': { CUSTOM_EOL = true; EOL = optarg; break; }
-      default: {}
+      case 'n': NR = atoi(optarg); break;
+      case 'r': ROWS = atoi(optarg); break;
+      case 'b': BEGIN = atoi(optarg); break;
+      case 'e': END = atoi(optarg); break;
+      default: break;
     }
   }
 
   const bool BITS[8] = 
   {
-    (NR & 0x01) != 0, (NR & 0x02) != 0, (NR & 0x04) != 0, (NR & 0x08) != 0, 
-    (NR & 0x10) != 0, (NR & 0x20) != 0, (NR & 0x40) != 0, (NR & 0x80) != 0
+    (NR & 0x01) != 0, (NR & 0x02) != 0, 
+    (NR & 0x04) != 0, (NR & 0x08) != 0, 
+    (NR & 0x10) != 0, (NR & 0x20) != 0,
+    (NR & 0x40) != 0, (NR & 0x80) != 0
   };
 
   Line o(false); o.set(0, true); o.print();

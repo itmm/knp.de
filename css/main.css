@@ -52,15 +52,15 @@ h3 {
   font-family: "Helvetica Neue", sans-serif;
   font-weight: 100;
   color: #062;
-  font-size: 120%;
+  font-size: 130%;
   margin-top: 1em;
   margin-bottom: 1em;
 }
 h4 {
   font-family: "Helvetica Neue", sans-serif;
   font-weight: 100;
-  color: #062;
-  font-size: 110%;
+  color: #596;
+  font-size: 130%;
   margin-top: 1em;
   margin-bottom: 1em;
 }
@@ -142,6 +142,7 @@ blockquote i {
 
 /* standard */
 .post pre {
+  font-size: 80%;
 }
 
 .post ul, .post ol {
@@ -149,6 +150,7 @@ blockquote i {
 }
 
 .post code {
+  font-size: 80%;
 }
 
 .post pre code {

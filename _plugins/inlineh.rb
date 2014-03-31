@@ -16,7 +16,7 @@ module Jekyll
     end
 
     def render(context)
-      link = "<a href=\"#{@filename}\">#{@filename}:</a>"
+      link = "<a href=\"#{@filename}\">#{@filename.split('/')[-1]}:</a>"
       code = @highlighter.render(context)
       "#{link}\n\n#{code}"
     end
