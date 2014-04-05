@@ -17,7 +17,11 @@
     <ins class="adsbygoogle"
       style="display:inline-block;width:160px;height:600px"
       data-ad-client="ca-pub-7234683611804468"
-      data-ad-slot="5022738432"></ins>
+{% if page.adsense %}
+      data-ad-slot="{{ page.adsense }}"></ins>
+{% else %}
+      data-ad-slot="1817946436"></ins>
+{% endif %}
 {% if page.amazon %}
 <iframe src="http://rcm-eu.amazon-adsystem.com/e/cm?lt1=_top&bc1=FFFFDD&IS2=1&bg1=FFFFDD&fc1=000000&lc1=006622&t=knpde-21&{{ page.amazon }}" style="width:120px;height:240px;float:left;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
 {% endif %}
