@@ -2,99 +2,135 @@
 #include <vector>
 #include <getopt.h>
 
-static int NR = 30;
-static int BEGIN = -39;
-static int END = 40;
-static int ROWS = 60;
+#pragma mark - configuration
+
+static int automata_nr = 30;
+static int display_rows = 60;
+static int display_column_begin = -39;
+static int display_column_end = 40;
+
+void handle_options(int argc, char **argv) {
+    static struct option long_options[] = {
+        { "nr", required_argument, 0, 'n' },
+        { "rows", required_argument, 0, 'r' },
+        { "begin", required_argument, 0, 'b' },
+        { "end", required_argument, 0, 'e' },
+        { 0 }
+    };
+
+    for (;;) {
+        int choice = getopt_long(
+            argc, argv,
+            "n:r:b:e:",
+            long_options, NULL
+        );
+
+        if (choice == -1) break;
+        switch (choice) {
+            case 'n':
+                automata_nr = atoi(optarg);
+                break;
+            case 'r':
+                display_rows = atoi(optarg);
+                break;
+            case 'b':
+                display_column_begin = atoi(optarg);
+                break;
+            case 'e':
+                display_column_end = atoi(optarg);
+        }
+    }
+}
+
+#pragma mark - handling bits in one line
 
 class Line {
 public:
-  Line(bool empty): _empty(empty), _begin(0), _data() {}
+    Line(bool placeholder, int begin);
 
-  bool empty() const { return _empty; }
-  int begin() const { return _begin; }
-  int end() const { return _begin + _data.size(); }
+    bool placeholder() const { return _placeholder; }
+    int begin() const { return _begin; }
+    int end() const { return _begin + _data.size(); }
+    int default_mask() const;
 
-  int get(int i) const;
-  void set(int i, bool v);
+    bool operator[](int index) const;
+    void push_back(bool value);
 
-  void print() const;
+    std::ostream &print(std::ostream &out) const;
 
 private:
-  bool _empty;
-  int _begin;
-  std::vector<bool> _data;
+    Line();
+  
+    bool _placeholder;
+    int _begin;
+    std::vector<bool> _data;
 };
 
-inline int Line::get(int i) const {
-  if (i < begin() || i >= end()) return _empty;
-  return _data[i - begin()];
+inline Line::Line(bool placeholder, int begin):
+    _placeholder(placeholder), _begin(begin), _data()
+{}
+
+inline int Line::default_mask() const {
+    return _placeholder ? 0b111 : 0b000;
 }
 
-void Line::set(int i, bool v) {
-  if (v == _empty) { return; }
-  if (_data.size()) {
-    while (end() < i) {
-      _data.push_back(_empty);
+inline bool Line::operator[](int i) const {
+    if (i < begin() || i >= end()) return _placeholder;
+    return _data[i - begin()];
+}
+
+inline void Line::push_back(bool value) {
+    _data.push_back(value);
+}
+
+std::ostream &Line::print(std::ostream &out) const {
+    for (
+        int i = display_column_begin;
+        i < display_column_end;
+        ++i
+    ) {
+        out << (*this)[i];
     }
-  }
-  else _begin = i; // first set defines leftmost
-  _data.push_back(v);
+    return out;
 }
 
-void Line::print() const {
-  for (int i = BEGIN; i < END; ++i) {
-    std::cout << (get(i) ? "1": "0");
-  }
-  std::cout << std::endl;
+std::ostream &operator<<(std::ostream &out, const Line &line) {
+    return line.print(out);
 }
+
+#pragma mark - run simulation
 
 int main(int argc, char **argv) {
-  for (;;) {
-    static struct option long_options[] = {
-      {"nr", required_argument, 0, 'n'},
-      {"rows", required_argument, 0, 'r'},
-      {"begin", required_argument, 0, 'b'},
-      {"end", required_argument, 0, 'e'},
-      {0}
+    handle_options(argc, argv);
+  
+    const bool resulting_bit[8] = {
+        (automata_nr & 0b00000001), (automata_nr & 0b00000010),
+        (automata_nr & 0b00000100), (automata_nr & 0b00001000),
+        (automata_nr & 0b00010000), (automata_nr & 0b00100000),
+        (automata_nr & 0b01000000), (automata_nr & 0b10000000)
     };
 
-    int option_index = 0;
-    int choice = getopt_long(
-      argc, argv, "n:r:b:e:", long_options, &option_index
-    );
+    Line previous(false, 0);
+    previous.push_back(true);
+    std::cout << previous << std::endl;
 
-    if (choice == -1) break;
-    switch (choice) {
-      case 'n': NR = atoi(optarg); break;
-      case 'r': ROWS = atoi(optarg); break;
-      case 'b': BEGIN = atoi(optarg); break;
-      case 'e': END = atoi(optarg); break;
-      default: break;
+    for (int i = 0; i < display_rows; ++i) {
+        Line current(
+            resulting_bit[previous.default_mask()],
+            previous.begin() - 1
+        );
+        
+        int gliding = previous.default_mask();
+        for (
+            int j = previous.begin();
+            j <= previous.end() + 1;
+            ++j
+        ) {
+            gliding = ((gliding << 1) + previous[j]) & 0b111;
+            current.push_back(resulting_bit[gliding]);
+        }
+
+        std::cout << current << std::endl;
+        previous = current;
     }
-  }
-
-  const bool BITS[8] = 
-  {
-    (NR & 0x01) != 0, (NR & 0x02) != 0, 
-    (NR & 0x04) != 0, (NR & 0x08) != 0, 
-    (NR & 0x10) != 0, (NR & 0x20) != 0,
-    (NR & 0x40) != 0, (NR & 0x80) != 0
-  };
-
-  Line o(false); o.set(0, true); o.print();
-
-  for (int i = 0; i < ROWS; ++i) {
-    Line n(BITS[o.empty()? 7: 0]);
-    int c = o.empty()? 7: 0;
-    for (int j = o.begin() - 1; j <= o.end(); ++j) {
-      c = (c * 2 + (o.get(j + 1)? 1: 0)) & 0x07;
-      n.set(j, BITS[c]);
-    }
-
-    n.print();
-    o = n;
-  }
-
-  return 0;
 }

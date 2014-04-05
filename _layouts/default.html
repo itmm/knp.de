@@ -18,6 +18,9 @@
       style="display:inline-block;width:160px;height:600px"
       data-ad-client="ca-pub-7234683611804468"
       data-ad-slot="5022738432"></ins>
+{% if page.amazon %}
+<iframe src="http://rcm-eu.amazon-adsystem.com/e/cm?lt1=_top&bc1=FFFFDD&IS2=1&bg1=FFFFDD&fc1=000000&lc1=006622&t=knpde-21&{{ page.amazon }}" style="width:120px;height:240px;float:left;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+{% endif %}
     <div class="indent content">
           {{ content }}
     </div>
@@ -29,6 +32,13 @@
     </div></div>
     <script>
       (adsbygoogle = window.adsbygoogle || []).push({});
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-49725284-1', 'knp.de');
+  ga('send', 'pageview');
     </script>
   </body>
 </html>
