@@ -10,7 +10,9 @@ Categories: robust
 	<i>(Douglas&nbsp;N.&nbsp;Adams)</i>
 </blockquote>
 
-### Physikalische Töne<
+Archiv-Einträge haben sich aus älteren Posts ergeben. Sie erscheinen hier in einem neuen Layout.
+
+### Physikalische Töne
 
 Aus physikalischer Sicht, kann ein Ton als eine Welle mit einer Wellenlänge beschrieben werden. Unterschiedliche Wellenlängen entsprechen unterschiedliche Töne.
 
