@@ -2,7 +2,7 @@
 layout: post
 title:  "Archiv: Modellierung von Tonhöhen"
 date:   2014-04-06 18:47
-amazon: o=3&p=8&l=as1&m=amazon&f=ifr&asins=0132350882&ref=tf_til
+amazon: o=3&p=8&l=as1&m=amazon&f=ifr&asins=0521009359&ref=tf_til
 Categories: robust
 ---
 <blockquote>
