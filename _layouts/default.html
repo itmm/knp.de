@@ -7,24 +7,12 @@
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="/css/syntax.css">
     <link rel="stylesheet" href="/css/main.css">
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   </head>
   <body>
     <div class="header"><div class="indent">
       <h1 class="title"><a href="/">{{ site.name }}</a></h1>
       &ndash; {{ page.title }}
     </div></div>
-    <ins class="adsbygoogle"
-      style="display:inline-block;width:160px;height:600px"
-      data-ad-client="ca-pub-7234683611804468"
-{% if page.adsense %}
-      data-ad-slot="{{ page.adsense }}"></ins>
-{% else %}
-      data-ad-slot="1817946436"></ins>
-{% endif %}
-{% if page.amazon %}
-<iframe src="http://rcm-eu.amazon-adsystem.com/e/cm?lt1=_top&bc1=FFFFDD&IS2=1&bg1=FFFFDD&fc1=000000&lc1=006622&t=knpde-21&{{ page.amazon }}" style="width:120px;height:240px;float:left;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
-{% endif %}
     <div class="indent content">
           {{ content }}
     </div>
@@ -34,15 +22,5 @@
       <a href="http://www.kna-st.de/contact.html">Kontakt</a> &ndash;
       <a href="http://www.kna-st.de/about.html">Impressum</a>
     </div></div>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-49725284-1', 'knp.de');
-  ga('send', 'pageview');
-    </script>
   </body>
 </html>
