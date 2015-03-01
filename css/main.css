@@ -11,22 +11,22 @@
 }
 
 body {
-  background-color: #ffd;
+  background-color: #eed;
   font: Georgia, serif;
   font-size: 16pt;
 }
 
 .indent {
-  max-width: 640px;
+  max-width: 840px;
   margin: auto;
 }
 
 .header {
   font-family: "Helvetica Neue", sans-serif;
   font-weight: 100;
-  background-color: #063;
+  background-color: #062;
   font-size: 140%;
-  color: #ffd;
+  color: #eed;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -56,7 +56,8 @@ h3 {
   font-family: "Helvetica Neue", sans-serif;
   font-weight: 100;
   color: #062;
-  font-size: 130%;
+  font-size: 110%;
+  border-bottom: solid 1px #062;
   margin-top: 1em;
   margin-bottom: 1em;
 }
@@ -64,7 +65,8 @@ h4 {
   font-family: "Helvetica Neue", sans-serif;
   font-weight: 100;
   color: #596;
-  font-size: 130%;
+  font-size: 110%;
+  border-bottom: solid 1px #596;
   margin-top: 1em;
   margin-bottom: 1em;
 }
@@ -89,8 +91,8 @@ a:hover   { color: #0f0; }
 }
 
 .posts span {
-  color: #063;
-  font-family: Helvetica, sans-serif;
+  color: #062;
+  font-family: "Helvetica Neue", sans-serif;
   font-weight: 100;
 }
 
@@ -99,16 +101,16 @@ a:hover   { color: #0f0; }
 }
 
 .header a, .footer a {
-  color: #ffd;
+  color: #eed;
 }
 
 .header a:hover, .footer a:hover {
-  color: #ff0;
+  color: #ee0;
 }
 
 blockquote {
   text-align: right;
-  color: #063;
+  color: #062;
   font-size: 71%;
   margin-bottom: 16px;
 }
@@ -116,12 +118,8 @@ blockquote i {
   color: #596;
 }
 
-.adsbygoogle {
-  float: right;
-}
-
 .meta {
-  font-family: Helvetica, sans-serif;
+  font-family: "Helvetica Neue", sans-serif;
   font-weight: 100;
   color: #596;
   text-align: right;
@@ -132,8 +130,8 @@ blockquote i {
   font-weight: 100;
   clear: both;
   text-align: right;
-  background-color: #063;
-  color: #ffd;
+  background-color: #062;
+  color: #eed;
   font-size: 71%;
   padding: 4px 0 4px 0;
 }
@@ -145,20 +143,31 @@ blockquote i {
 /*****************************************************************************/
 
 /* standard */
-.post pre {
-  font-size: 80%;
-}
-
 .post ul, .post ol {
   margin-left: 1.35em;
 }
 
+.post pre {
+  background-color: rgba(0,0,0,0.02);
+  border: solid 1px rgba(0,0,0,0.1);
+  border-radius: 0.5em;
+  padding: 0.5em 1em 0.5em 1em;
+  margin: 1em 0 1em 0;
+}
+
 .post code {
-  font-size: 80%;
+  font-family: "Courier New", monospace;
+  font-size: 85%;
+  background-color: rgba(0,0,0,0.02);
+  border: solid 1px rgba(0,0,0,0.1);
+  border-radius: 0.3em;
+  padding: 0 0.2em 0 0.2em;
 }
 
 .post pre code {
+  background-color: rgba(0,0,0,0);
   border: none;
+  padding: 0;
 }
 
 /* terminal */

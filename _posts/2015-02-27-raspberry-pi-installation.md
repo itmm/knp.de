@@ -14,11 +14,11 @@ Am Freitag Abend hatte ich alles zusammen, um meinen Raspberry Pi in Betrieb zu 
 * ein iPhone-Ladegerät mit Adapterkabel hatte ich bereits,
 * am Freitag holte ich auf dem Heimweg Tastatur, Maus, Kartenleser und HDMI-Kabel bei Computeruniverse in Friedrichsdorf ab.
 
-Ich hatte bereits das NOOB-Paket auf die Karte kopiert und startete sie im Pi. Als Monitor verwendete ich meinen Beamer.
+Ich hatte bereits das NOOB LITE-Paket auf die Karte kopiert und startete sie im Pi. Als Monitor verwendete ich meinen Beamer.
 
 Anstatt des WLANs war der Pi zunächst direkt mit einem Kabel an die FRITZ!Box angeschlossen.
 
-Soweit, so gut: das System startete, ich konnte Rasbian als Betriebssystem auswählen und aus dem Netz wurde alles auf die 32 GB Speicherkarte installiert.
+Soweit, so gut: das System startete, ich konnte Raspbian als Betriebssystem auswählen und aus dem Netz wurde alles auf die 32 GB Speicherkarte installiert.
 
 Nach dem Reboot startete das Konfigurationsprogramm und kurze Zeit später hatte ich eine X11-Oberfläche laufen.
 
@@ -28,15 +28,15 @@ Unter X11 ging das Einrichten des WLANs problemlos. In den Einstellungen gab es 
 
 Nachdem ich die FRITZ!Box so umkonfiguriert hatte, dass sie neue Geräte akzeptierte, wurde die Verbindung aufgebaut und der Pi sprach über WLAN.
 
-Auch nachdem ich das X beendet hatte und beim Neustart direkt in die Konsole bootete, blieb die WLAN Konfiguration erhalten.
+Auch nachdem ich das X11 beendet hatte und beim Neustart direkt in die Konsole bootete, blieb die WLAN Konfiguration erhalten.
 
 ### Unerreichbar
 
 Also zog ich Tastatur, Maus und HMDI Kabel ab, und legte den Pi nur mit einem Stromanschluss in die Ecke.
 
-Er bootete, ging ins Netz, ich kam vom Mac per SSH drauf, aber nicht lange. Nach ein paar Minuten wurde die Verbindung unterbrochen.
+Er bootete, ging ins Netz, ich kam vom Mac per `ssh` drauf, aber nicht lange. Nach ein paar Minuten wurde die Verbindung unterbrochen.
 
-Zuerst dachte ich an ein zu schwaches Netzteil. Aber als ich dann doch das HDMI-Kabel und die Tastatur wieder anschloss, war der Rechner immer noch da. Ich konnte mich direkt anmelden, und auf der Konsole www.google.com anpingen. Alles ohne Probleme.
+Zuerst dachte ich an ein zu schwaches Netzteil. Aber als ich dann doch das HDMI-Kabel und die Tastatur wieder anschloss, war der Rechner immer noch da. Ich konnte mich direkt anmelden, und auf der Konsole `www.google.com` anpingen. Alles ohne Probleme.
 
 Aber von außen war der Rechner nicht sichtbar. Weder unter seinem Namen, noch unter der IP. Firewall war nicht aktiviert.
 
