@@ -69,8 +69,8 @@ Damit können alle drei Linien in einem Diagramm ausgegeben werden:
 ````mathematica
 ParametricPlot[{
   curl[curlRange[x]],
-  {x*width + startX, upperY},
-  {x*width + startX, lowerY}
+  {x * width + startX, upperY},
+  {x * width + startX, lowerY}
 }, {x, 0, 1}]
 ````
 
@@ -81,7 +81,10 @@ ParametricPlot[{
 Um die BSplines schön anzusetzen, müssen wir zu einem Punkt der Spirale seine Tangente berechnen. In erster Näherung ist das einfach ein Vektor, der senkrecht auf dem Verbindungsvektor vom Ursprung steht. Den kann man durch Vertauschen den Komponenten leicht berechnen:
 
 ````mathematica
-tangent[t_, o_] :=  Module[{p = curl[t], q}, q = {p[[2]], -p[[1]]}; p + o q]
+tangent[t_, o_] :=  Module[
+  {p = curl[t], q}, 
+  q = {p[[2]], -p[[1]]}; p + o q
+]
 ````
 
 Nennen wir den Parameter für den Punkt, an dem die obere Linie auf die Schnecke triffet `cutCurl`, dann ergibt sich:
@@ -101,22 +104,24 @@ Damit lassen sich jetzt einfach die Splines zwischen den Teilstücken angeben:
 
 ````mathematica
 ParametricPlot[{
-  curl[curlRange[x]],
-  {x*width + startX, upperY},   {x*width + startX, lowerY}
-  }, {x, 0, 1}, Epilog -> {
-   BSplineCurve[{
-     {startX + width, upperY},
-     {startX + width + 1/2, upperY},
-     tangent[cutCurl, 3/2],
-     curl[cutCurl]
-   }],
-   BSplineCurve[{
-     {startX + width, lowerY},
-     {startX + width + 1, lowerY},
-     tangent[maxCurl, 1/2],
-     curl[maxCurl]
-   }]
- }
+    curl[curlRange[x]],
+    {x * width + startX, upperY},
+    {x * width + startX, lowerY}
+  }, {x, 0, 1},
+  Epilog -> {
+    BSplineCurve[{
+      {startX + width, upperY},
+      {startX + width + 1/2, upperY},
+      tangent[cutCurl, 3/2],
+      curl[cutCurl]
+    }],
+    BSplineCurve[{
+      {startX + width, lowerY},
+      {startX + width + 1, lowerY},
+      tangent[maxCurl, 1/2],
+      curl[maxCurl]
+    }]
+  }
 ]
 ````
 
@@ -126,8 +131,9 @@ Nun müssen nur noch alle Linien in Schwarz und mit der gleichen Strichdicke gez
 
 ````mathematica
 ParametricPlot[{
-  curl[curlRange[x]],
-  {x*width + startX, upperY},   {x*width + startX, lowerY}
+    curl[curlRange[x]],
+    {x * width + startX, upperY},
+    {x * width + startX, lowerY}
   }, {x, 0, 1},
   Axes -> False,
   PlotStyle -> {AbsoluteThickness[1]},

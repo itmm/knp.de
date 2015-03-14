@@ -1,17 +1,17 @@
 ---
 layout: default
-title: Startseite
-adsense: 5022738432
+title: Mathematica ideas
 ---
 <blockquote>
 Speak friend and enter.<br/>
 <i>(J.R.R.&nbsp;Tolkien)</i>
 </blockquote>
 <p>
-  Auf dieser Seite finden Sie meine Blog-Artikel in loser Folge.
+  On this site I will publish articles about mathematics in general
+  and Mathematica in particular.
 </p>
   <ul class="posts">
     {% for post in site.posts %}
-      <li><span>{{ post.date | date: '%d.%m.%Y' }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
+      <li><span>{{ post.date | date: '%m/%d/%Y' }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
     {% endfor %}
   </ul>
