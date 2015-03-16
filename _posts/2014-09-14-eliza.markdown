@@ -10,5 +10,7 @@ I created a new [GitHub] project with [ELIZA]. It is based on a C version, that 
 
 Basically I wrote this program for my daughter to rouse her interest in programming. It is fun to see, how little is needed to produce a program, that acts so smart.
 
+{% inlineh /assets/eliza.c C %}
+
 [GitHub]: http://www.github.com
 [ELIZA]: http://www.github.com/itmm/eliza
