@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>knp.de &ndash; Raspberry Pi Installation</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <div class="header"><div class="indent">
+      <h1 class="title"><a href="/">knp.de</a></h1>
+      &ndash; Raspberry Pi Installation
+    </div></div>
+    <div class="indent content">
+          <h2>Raspberry Pi Installation</h2>
+<p class="meta">02/27/2015</p>
+<div class="post">
+<h3>Bootstrap</h3>
+
+<p>Am Freitag Abend hatte ich alles zusammen, um meinen Raspberry Pi in Betrieb zu nehmen:</p>
+
+<ul>
+<li>die Platine kam am Donnerstag,</li>
+<li>die microSD-Karte und das WLAN-Modul schon am Dienstag,</li>
+<li>ein iPhone-Ladegerät mit Adapterkabel hatte ich bereits,</li>
+<li>am Freitag holte ich auf dem Heimweg Tastatur, Maus, Kartenleser und HDMI-Kabel bei Computeruniverse in Friedrichsdorf ab.</li>
+</ul>
+
+<p>Ich hatte bereits das NOOB LITE-Paket auf die Karte kopiert und startete sie im Pi. Als Monitor verwendete ich meinen Beamer.</p>
+
+<p>Anstatt des WLANs war der Pi zunächst direkt mit einem Kabel an die FRITZ!Box angeschlossen.</p>
+
+<p>Soweit, so gut: das System startete, ich konnte Raspbian als Betriebssystem auswählen und aus dem Netz wurde alles auf die 32 GB Speicherkarte installiert.</p>
+
+<p>Nach dem Reboot startete das Konfigurationsprogramm und kurze Zeit später hatte ich eine X11-Oberfläche laufen.</p>
+
+<h3>WLAN einrichten</h3>
+
+<p>Unter X11 ging das Einrichten des WLANs problemlos. In den Einstellungen gab es dafür einen eigenen Menüpunkt. Sichtbare Netze wurden nicht angezeigt, aber ich konnte ein neues Netz anlegen und den WPA2 Schlüssel hinterlegen.</p>
+
+<p>Nachdem ich die FRITZ!Box so umkonfiguriert hatte, dass sie neue Geräte akzeptierte, wurde die Verbindung aufgebaut und der Pi sprach über WLAN.</p>
+
+<p>Auch nachdem ich das X11 beendet hatte und beim Neustart direkt in die Konsole bootete, blieb die WLAN Konfiguration erhalten.</p>
+
+<h3>Unerreichbar</h3>
+
+<p>Also zog ich Tastatur, Maus und HMDI Kabel ab, und legte den Pi nur mit einem Stromanschluss in die Ecke.</p>
+
+<p>Er bootete, ging ins Netz, ich kam vom Mac per <code>ssh</code> drauf, aber nicht lange. Nach ein paar Minuten wurde die Verbindung unterbrochen.</p>
+
+<p>Zuerst dachte ich an ein zu schwaches Netzteil. Aber als ich dann doch das HDMI-Kabel und die Tastatur wieder anschloss, war der Rechner immer noch da. Ich konnte mich direkt anmelden, und auf der Konsole <code>www.google.com</code> anpingen. Alles ohne Probleme.</p>
+
+<p>Aber von außen war der Rechner nicht sichtbar. Weder unter seinem Namen, noch unter der IP. Firewall war nicht aktiviert.</p>
+
+<p>Wenn ich aber eine <code>ssh</code>-Verbindung vom Pi zum Mac aufmachte, konnte ich auch vom Mac zurück zum Pi eine Verbindung erstellen. Beendete ich die Verbindung vom Pi, brach kurze Zeit später auch wieder dei andere Verbindung zusammen.</p>
+
+<h3>Powermanagement des WLAN-Treibers</h3>
+
+<p>Nach einigem Googeln kam ich dann zur Lösung: der WLAN-Treiber hat ein eigenes Powermanagement. Sobald er erkennt, dass das WLAN nicht gebraucht wird, fährt er es runter.</p>
+
+<p>Prüfen kann man es mit dem folgenden Kommando:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">cat /sys/module/8192cu/parameters/rtw_power_mgnt
+</code></pre></div>
+<p>Wenn als Ergebnis eine <code>1</code> oder <code>2</code> erscheint, dann ist das Powermanagement aktiv. Damit der Pi dauerhaft von außen über WLAN erreichbar ist, muss es deaktiviert werden.</p>
+
+<p>Dafür muss in die Datei <code>/etc/modprobe.d/8192cu.conf</code> die folgende Zeile stehen:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">options 8192cu rtw_power_mgnt=0 rtw_enusbss=0
+</code></pre></div>
+<p>Nach einem Neustart sollte dann der obige <code>cat</code>-Befehl eine <code>0</code> liefern.</p>
+
+<p>Damit funktionierte der Pi bei mir wie erwartet.</p>
+
+<h3>Mathematica</h3>
+
+<p>Wenn der <code>ssh</code>-Befehl mit <code>-X</code> gestartet wird und lokal auf dem Mac ein X11 Server läuft, können auch grafische Programme auf dem Pi gestartet werden. Die Ausgabe erfolgt dann auf dem Mac.</p>
+
+<p>Die Eingabe von <code>mathematica</code> startet das gleichnamige Programm. Es läuft zwar nicht so schnell, wie auf dem Mac, aber ist durchaus verwendbar.</p>
+
+<h3>Fazit</h3>
+
+<p>Der erste Abend mit dem Pi war ein voller Erfolg. Nur die Hakeleien mit dem WLAN-Modul haben mir etwas Kopfzerbrechen bereitet. Ansonsten erhält man einen wahnsinnig günstigen und kompakten Linux-Rechner, der Lust auf mehr macht.</p>
+
+</div>
+<hr/>
+<h3>Comments</h3>
+<p>Would you like to correct, expand or correct an entry? Please
+send an e-mail to
+<a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a>.
+I&nbsp;will gladly publish interesting contributions on this site.
+
+    </div>
+    <div class="footer"><div class="indent">
+      &copy; 2015 Timm Knape &ndash; 
+      <a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a> &ndash; 
+      <a href="http://www.kna-st.de/contact.html">Contact</a> &ndash;
+      <a href="http://www.kna-st.de/about.html">About/Impressum</a>
+    </div></div>
+  </body>
+</html>

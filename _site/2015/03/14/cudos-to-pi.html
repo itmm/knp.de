@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>knp.de &ndash; Cudos to π</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <div class="header"><div class="indent">
+      <h1 class="title"><a href="/">knp.de</a></h1>
+      &ndash; Cudos to π
+    </div></div>
+    <div class="indent content">
+          <h2>Cudos to π</h2>
+<p class="meta">03/14/2015</p>
+<div class="post">
+<p>This post is not directly related to Mathematica. Instead it is about the number π. This is because this week contains the best approximation to π you can get in this millennium (at least if you are using american notation): 3/14/15.</p>
+
+<p>As you have surely learned in school, π is roughly</p>
+<div class="highlight"><pre><code class="language-mathematica" data-lang="mathematica"><span class="mf">3.141592653589793238462643383279502884197169399375105820974944592307816406</span><span class="w"></span>
+</code></pre></div>
+<p>Here I want to talk about a nice relation to π with the complex numbers. And how you can extract a bunch of trigonometry stuff from it, if you now complex exponentiation.</p>
+
+<h3>Very short definition of the complex numbers</h3>
+
+<p>A complex number <code>z</code> can be treated as an ordered pair of two real numbers:</p>
+<div class="highlight"><pre><code class="language-mathematica" data-lang="mathematica"><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">z1</span><span class="p">,</span><span class="w"> </span><span class="n">z2</span><span class="p">]</span><span class="w"></span>
+</code></pre></div>
+<p>Two such numbers <code>z = [z1,z2]</code> and <code>y = [y1,y2]</code> can be added by adding there components:</p>
+<div class="highlight"><pre><code class="language-mathematica" data-lang="mathematica"><span class="n">z</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">z1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y1</span><span class="p">,</span><span class="w"> </span><span class="n">z2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y2</span><span class="p">]</span><span class="w"></span>
+</code></pre></div>
+<p>and multiplied by this strange formula:</p>
+<div class="highlight"><pre><code class="language-mathematica" data-lang="mathematica"><span class="n">z</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">z1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">z2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y2</span><span class="p">,</span><span class="w"> </span><span class="n">z1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">z2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y1</span><span class="p">]</span><span class="w"></span>
+</code></pre></div>
+<p>Basically we treat the second component as a factor for the strange number <code>i</code> whose square is defined to be -1.</p>
+
+<h3>Complex Exponentiation</h3>
+
+<p>So what is <code>e</code> to the power <code>z</code>, if <code>z</code> is a complex number? Using the Taylor expansion, the e function can be written as</p>
+<div class="highlight"><pre><code class="language-mathematica" data-lang="mathematica"><span class="n">Exp</span><span class="p">[</span><span class="nv">x_</span><span class="p">]</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Sum</span><span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="n">j</span><span class="o">!</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="o">^</span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"></span>
+</code></pre></div>
+<p>In this expansion we are only using addition and multiplication. Both are defined for complex numbers, so we use the Taylor expansion as a definition for the complex exponentiation.</p>
+
+<h3>Coming to π</h3>
+
+<p>If use the Taylor expansion of the <code>Cos</code> and <code>Sin</code> functions, we can verify that</p>
+<div class="highlight"><pre><code class="language-mathematica" data-lang="mathematica"><span class="n">Exp</span><span class="p">[[</span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Exp</span><span class="p">[</span><span class="n">x1</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">[</span><span class="n">Cos</span><span class="p">[</span><span class="n">x2</span><span class="p">],</span><span class="w"> </span><span class="n">Sin</span><span class="p">[</span><span class="n">x2</span><span class="p">]]</span><span class="w"></span>
+</code></pre></div>
+<p>And therefore</p>
+<div class="highlight"><pre><code class="language-mathematica" data-lang="mathematica"><span class="n">Exp</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">Pi</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"></span>
+</code></pre></div>
+<p>So we can define π as the double of the second entry of the inverse function:</p>
+<div class="highlight"><pre><code class="language-mathematica" data-lang="mathematica"><span class="n">Log</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]][[</span><span class="mi">2</span><span class="p">]]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Pi</span><span class="w"></span>
+</code></pre></div>
+<p>This is nice, because we found π solely by using the complex exponentiation and its inverse: the logarithm. No trigonometry needed (only to find the right value).</p>
+
+<p>So good luck π, for the next millennia.</p>
+
+<p>You can read more about π in Petr Beckmanns <a href="http://www.amazon.de/A-History-Pi-Peter-Beckman/dp/0312381859/ref=tmm_pap_title_0&amp;tag=knpde-21">A History of Pi</a>.</p>
+
+</div>
+<hr/>
+<h3>Comments</h3>
+<p>Would you like to correct, expand or correct an entry? Please
+send an e-mail to
+<a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a>.
+I&nbsp;will gladly publish interesting contributions on this site.
+
+    </div>
+    <div class="footer"><div class="indent">
+      &copy; 2015 Timm Knape &ndash; 
+      <a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a> &ndash; 
+      <a href="http://www.kna-st.de/contact.html">Contact</a> &ndash;
+      <a href="http://www.kna-st.de/about.html">About/Impressum</a>
+    </div></div>
+  </body>
+</html>

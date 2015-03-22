@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>knp.de &ndash; Archiv: Zelluläre Automaten simulieren</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <div class="header"><div class="indent">
+      <h1 class="title"><a href="/">knp.de</a></h1>
+      &ndash; Archiv: Zelluläre Automaten simulieren
+    </div></div>
+    <div class="indent content">
+          <h2>Archiv: Zelluläre Automaten simulieren</h2>
+<p class="meta">03/31/2014</p>
+<div class="post">
+<p>Archiv-Einträge haben sich aus älteren Posts ergeben. Sie erscheinen hier in einem neuen Layout.</p>
+
+<p>Einer meiner ältesten Posts beschäftigt sich mit zellulären Automaten. Eine Zeile aus Bits (mit den Werten 0 oder 1) sind gegeben. Das Bit an einer beliebigen Position in der nächsten Zeile ist durch das Bit aus der vorherigen Zeile und seine Nachbarn bestimmt.</p>
+
+<p>Das folgende Programm in C++ simuliert einen solchen Automaten.</p>
+
+<p><a href="/assets/cellular.c++">cellular.c++:</a></p>
+
+<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="cp">#include &lt;iostream&gt;</span>
+<span class="cp">#include &lt;vector&gt;</span>
+<span class="cp">#include &lt;getopt.h&gt;</span>
+
+<span class="cp">#pragma mark - configuration</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="n">automata_nr</span> <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">display_rows</span> <span class="o">=</span> <span class="mi">60</span><span class="p">;</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">display_column_begin</span> <span class="o">=</span> <span class="o">-</span><span class="mi">39</span><span class="p">;</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">display_column_end</span> <span class="o">=</span> <span class="mi">40</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">handle_options</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">static</span> <span class="k">struct</span> <span class="n">option</span> <span class="n">long_options</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">{</span> <span class="s">&quot;nr&quot;</span><span class="p">,</span> <span class="n">required_argument</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;n&#39;</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="s">&quot;rows&quot;</span><span class="p">,</span> <span class="n">required_argument</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;r&#39;</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="s">&quot;begin&quot;</span><span class="p">,</span> <span class="n">required_argument</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;b&#39;</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="s">&quot;end&quot;</span><span class="p">,</span> <span class="n">required_argument</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;e&#39;</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="mi">0</span> <span class="p">}</span>
+    <span class="p">};</span>
+
+    <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">choice</span> <span class="o">=</span> <span class="n">getopt_long</span><span class="p">(</span>
+            <span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span>
+            <span class="s">&quot;n:r:b:e:&quot;</span><span class="p">,</span>
+            <span class="n">long_options</span><span class="p">,</span> <span class="nb">NULL</span>
+        <span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">choice</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">switch</span> <span class="p">(</span><span class="n">choice</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="sc">&#39;n&#39;</span><span class="o">:</span>
+                <span class="n">automata_nr</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">optarg</span><span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="sc">&#39;r&#39;</span><span class="o">:</span>
+                <span class="n">display_rows</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">optarg</span><span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="sc">&#39;b&#39;</span><span class="o">:</span>
+                <span class="n">display_column_begin</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">optarg</span><span class="p">);</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="sc">&#39;e&#39;</span><span class="o">:</span>
+                <span class="n">display_column_end</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">optarg</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#pragma mark - handling bits in one line</span>
+
+<span class="k">class</span> <span class="nc">Line</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">Line</span><span class="p">(</span><span class="kt">bool</span> <span class="n">placeholder</span><span class="p">,</span> <span class="kt">int</span> <span class="n">begin</span><span class="p">);</span>
+
+    <span class="kt">bool</span> <span class="n">placeholder</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_placeholder</span><span class="p">;</span> <span class="p">}</span>
+    <span class="kt">int</span> <span class="n">begin</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_begin</span><span class="p">;</span> <span class="p">}</span>
+    <span class="kt">int</span> <span class="n">end</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_begin</span> <span class="o">+</span> <span class="n">_data</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="p">}</span>
+    <span class="kt">int</span> <span class="n">default_mask</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+    <span class="kt">bool</span> <span class="k">operator</span><span class="p">[](</span><span class="kt">int</span> <span class="n">index</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">push_back</span><span class="p">(</span><span class="kt">bool</span> <span class="n">value</span><span class="p">);</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="n">print</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="n">out</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">Line</span><span class="p">();</span>
+  
+    <span class="kt">bool</span> <span class="n">_placeholder</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">_begin</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">_data</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kr">inline</span> <span class="n">Line</span><span class="o">::</span><span class="n">Line</span><span class="p">(</span><span class="kt">bool</span> <span class="n">placeholder</span><span class="p">,</span> <span class="kt">int</span> <span class="n">begin</span><span class="p">)</span><span class="o">:</span>
+    <span class="n">_placeholder</span><span class="p">(</span><span class="n">placeholder</span><span class="p">),</span> <span class="n">_begin</span><span class="p">(</span><span class="n">begin</span><span class="p">),</span> <span class="n">_data</span><span class="p">()</span>
+<span class="p">{}</span>
+
+<span class="kr">inline</span> <span class="kt">int</span> <span class="n">Line</span><span class="o">::</span><span class="n">default_mask</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">_placeholder</span> <span class="o">?</span> <span class="mi">0</span><span class="nl">b111</span> <span class="p">:</span> <span class="mi">0</span><span class="n">b000</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="kt">bool</span> <span class="n">Line</span><span class="o">::</span><span class="k">operator</span><span class="p">[](</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">begin</span><span class="p">()</span> <span class="o">||</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">end</span><span class="p">())</span> <span class="k">return</span> <span class="n">_placeholder</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">_data</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">begin</span><span class="p">()];</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="kt">void</span> <span class="n">Line</span><span class="o">::</span><span class="n">push_back</span><span class="p">(</span><span class="kt">bool</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">_data</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="n">Line</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="n">out</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span>
+        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">display_column_begin</span><span class="p">;</span>
+        <span class="n">i</span> <span class="o">&lt;</span> <span class="n">display_column_end</span><span class="p">;</span>
+        <span class="o">++</span><span class="n">i</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="n">out</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">)[</span><span class="n">i</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">out</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="n">out</span><span class="p">,</span> <span class="k">const</span> <span class="n">Line</span> <span class="o">&amp;</span><span class="n">line</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">line</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="n">out</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cp">#pragma mark - run simulation</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">handle_options</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+  
+    <span class="k">const</span> <span class="kt">bool</span> <span class="n">resulting_bit</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">(</span><span class="n">automata_nr</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b00000001</span><span class="p">),</span> <span class="p">(</span><span class="n">automata_nr</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b00000010</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">automata_nr</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b00000100</span><span class="p">),</span> <span class="p">(</span><span class="n">automata_nr</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b00001000</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">automata_nr</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b00010000</span><span class="p">),</span> <span class="p">(</span><span class="n">automata_nr</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b00100000</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">automata_nr</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b01000000</span><span class="p">),</span> <span class="p">(</span><span class="n">automata_nr</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b10000000</span><span class="p">)</span>
+    <span class="p">};</span>
+
+    <span class="n">Line</span> <span class="nf">previous</span><span class="p">(</span><span class="nb">false</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">previous</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">previous</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">display_rows</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Line</span> <span class="n">current</span><span class="p">(</span>
+            <span class="n">resulting_bit</span><span class="p">[</span><span class="n">previous</span><span class="p">.</span><span class="n">default_mask</span><span class="p">()],</span>
+            <span class="n">previous</span><span class="p">.</span><span class="n">begin</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="p">);</span>
+        
+        <span class="kt">int</span> <span class="n">gliding</span> <span class="o">=</span> <span class="n">previous</span><span class="p">.</span><span class="n">default_mask</span><span class="p">();</span>
+        <span class="k">for</span> <span class="p">(</span>
+            <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">previous</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+            <span class="n">j</span> <span class="o">&lt;=</span> <span class="n">previous</span><span class="p">.</span><span class="n">end</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="o">++</span><span class="n">j</span>
+        <span class="p">)</span> <span class="p">{</span>
+            <span class="n">gliding</span> <span class="o">=</span> <span class="p">((</span><span class="n">gliding</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">previous</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b111</span><span class="p">;</span>
+            <span class="n">current</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">resulting_bit</span><span class="p">[</span><span class="n">gliding</span><span class="p">]);</span>
+        <span class="p">}</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">current</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+        <span class="n">previous</span> <span class="o">=</span> <span class="n">current</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Der Code wurde etwas aufpoliert.
+Der voreingestellte Automat eignet sich wunderbar, um Zufallszahlen zu generieren.</p>
+
+<h3>Konfiguration</h3>
+
+<p>Über Kommandozeilen Optionen kann das Verhalten und die Ausgabe des Programms verändert werden.</p>
+
+<h4>Verhalten</h4>
+
+<p>Der Parameter <code>-n</code> oder <code>--nr</code> gibt an, welcher Automat simuliert werden soll. Die Ausgaben aller Automaten sind in alle einfachen Automaten abgebildet.</p>
+
+<p>Die Nummer ergibt sich aus den Ausgaben des Automaten für alle möglichen Eingaben, etwa:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">000 → 0 ⇒ 0 * 1
+001 → 1 ⇒ 1 * 2
+010 → 0 ⇒ 0 * 4
+011 → 0 ⇒ 0 * 8
+100 → 1 ⇒ 1 * 16
+101 → 0 ⇒ 0 * 32
+110 → 0 ⇒ 0 * 64
+111 → 0 ⇒ 0 * 128
+</code></pre></div>
+<p>Die Summe der rechten Spalte ergibt <code>2 + 16 == 18</code> als Nummer für den Automaten.</p>
+
+<p>Das Eingabemuster der ersten Zeile ist ein einzelnes gesetztes Pixel in der Spalte <code>0</code>.</p>
+
+<h4>Ausgabe</h4>
+
+<p>Die Anzahl der ausgegebenen Spalten wird über den Parameter <code>-r</code> oder <code>--rows</code> angegeben. Wenn dieser Parameter nicht angegeben wird, dann werden <code>30</code> Zeilen ausgegeben.</p>
+
+<p>Die erste auszugebende Spalte kann mit <code>-b</code> oder <code>--begin</code> angegeben werden. Die erste Spalte, die nicht mehr ausgegeben wird, kann mit <code>-e</code> oder <code>--end</code> angegeben werden. Die Semantik ist analog zu Containern in der C++ STL.</p>
+
+<p>Insgesamt werden</p>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="o">--</span><span class="n">end</span> <span class="o">-</span> <span class="o">--</span><span class="n">begin</span>
+</code></pre></div>
+<p>viele Spalten ausgegeben. Wenn die Parameter nicht angegeben werden, dann wird <code>-39</code> für <code>--begin</code> und <code>40</code> für <code>--end</code> verwendet.</p>
+
+<p>Für jedes gesetzte Bit wird eine <code>1</code> und für jedes gelöschte Bit eine <code>0</code> ausgegeben. Jede Zeile wird mit einem Zeilenvorschub terminiert.</p>
+
+<p>Folgender Aufruf gibt zum Beispiel die mittlere Spalte als Binärzahl zurück (der <code>tr</code>-Aufruf entfernt die Zeilenumbrüche):</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">cellular --rows<span class="o">=</span><span class="m">400</span> --begin<span class="o">=</span><span class="m">0</span> --end<span class="o">=</span><span class="m">1</span> <span class="p">|</span> tr -d <span class="s2">&quot;\\n&quot;</span>
+</code></pre></div>
+<p>Liefert das Ergebnis</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">110111001100010110010011101011100111010101100001100101011010
+101111110000111100010101110000010010110001110001101101101000
+000010001111101110100111000111010111000001100100011001111001
+111110000001111111011001011011100000101100011011000110001110
+110110010101111111011010110110111101110010111011000100000000
+001101110010110010111100100110000111110000001011011001111001
+00001001111100000110100101100100101110101
+</code></pre></div>
+<p>Damit können sich schöne Zufallszahlen generieren lassen.</p>
+
+<h4>Sierpinski</h4>
+
+<p>Der Automat 16 erinnert an das berühmte Fraktal:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">000000000000000000000000000000010000000000000000000000000000000
+000000000000000000000000000000101000000000000000000000000000000
+000000000000000000000000000001000100000000000000000000000000000
+000000000000000000000000000010101010000000000000000000000000000
+000000000000000000000000000100000001000000000000000000000000000
+000000000000000000000000001010000010100000000000000000000000000
+000000000000000000000000010001000100010000000000000000000000000
+000000000000000000000000101010101010101000000000000000000000000
+000000000000000000000001000000000000000100000000000000000000000
+000000000000000000000010100000000000001010000000000000000000000
+000000000000000000000100010000000000010001000000000000000000000
+000000000000000000001010101000000000101010100000000000000000000
+000000000000000000010000000100000001000000010000000000000000000
+000000000000000000101000001010000010100000101000000000000000000
+000000000000000001000100010001000100010001000100000000000000000
+000000000000000010101010101010101010101010101010000000000000000
+000000000000000100000000000000000000000000000001000000000000000
+000000000000001010000000000000000000000000000010100000000000000
+000000000000010001000000000000000000000000000100010000000000000
+000000000000101010100000000000000000000000001010101000000000000
+000000000001000000010000000000000000000000010000000100000000000
+000000000010100000101000000000000000000000101000001010000000000
+000000000100010001000100000000000000000001000100010001000000000
+000000001010101010101010000000000000000010101010101010100000000
+000000010000000000000001000000000000000100000000000000010000000
+000000101000000000000010100000000000001010000000000000101000000
+000001000100000000000100010000000000010001000000000001000100000
+000010101010000000001010101000000000101010100000000010101010000
+000100000001000000010000000100000001000000010000000100000001000
+001010000010100000101000001010000010100000101000001010000010100
+010001000100010001000100010001000100010001000100010001000100010
+101010101010101010101010101010101010101010101010101010101010101
+</code></pre></div>
+<p>Dies wurde mit dem Aufruf</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">cellular --nr <span class="m">18</span> --rows <span class="m">31</span> --begin -31 --end 32
+</code></pre></div>
+<p>erzeugt.</p>
+
+<p>Weitere Informationen zu zellulären Automaten finden sich zum Beispiel in
+<a href="http://www.amazon.de/New-Kind-Science-Stephen-Wolfram/dp/1579550088/?_encoding=UTF8&amp;camp=1638&amp;creative=6742&amp;keywords=new%20kind%20of%20science&amp;linkCode=ur2&amp;qid=1396643930&amp;s=books-intl-de&amp;site-redirect=de&amp;sr=1-1&amp;tag=knpde-21%22">A New Kind of Science</a>.</p>
+
+</div>
+<hr/>
+<h3>Comments</h3>
+<p>Would you like to correct, expand or correct an entry? Please
+send an e-mail to
+<a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a>.
+I&nbsp;will gladly publish interesting contributions on this site.
+
+    </div>
+    <div class="footer"><div class="indent">
+      &copy; 2015 Timm Knape &ndash; 
+      <a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a> &ndash; 
+      <a href="http://www.kna-st.de/contact.html">Contact</a> &ndash;
+      <a href="http://www.kna-st.de/about.html">About/Impressum</a>
+    </div></div>
+  </body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>knp.de &ndash; ELIZA the Psychologist in C</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <div class="header"><div class="indent">
+      <h1 class="title"><a href="/">knp.de</a></h1>
+      &ndash; ELIZA the Psychologist in C
+    </div></div>
+    <div class="indent content">
+          <h2>ELIZA the Psychologist in C</h2>
+<p class="meta">09/14/2014</p>
+<div class="post">
+<p>I created a new <a href="http://www.github.com">GitHub</a> project with <a href="http://www.github.com/itmm/eliza">ELIZA</a>. It is based on a C version, that I found on the net. But I rewrote it, so you can now compile it with Clang without any errors or warning. Even if you set the warning level to <code>-pedantic</code>.</p>
+
+<p>Basically I wrote this program for my daughter to rouse her interest in programming. It is fun to see, how little is needed to produce a program, that acts so smart.</p>
+
+<p><a href="/assets/eliza.c">eliza.c:</a></p>
+
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// Found on hackchina.com</span>
+<span class="c1">// Tidied up a little by David Bolton, http://cplus.about.com</span>
+<span class="c1">// Tidied up even more by Timm Knape, http://www.knp.de</span>
+<span class="c1">// This is in the public domain under MIT license</span>
+
+<span class="cp">#include &lt;stdbool.h&gt;</span>
+<span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+<span class="cp">#include &lt;ctype.h&gt;</span>
+
+
+<span class="cm">/* CONFIGURATION</span>
+<span class="cm"> ****************/</span>
+
+<span class="cp">#define MAX_INPUT_BUFFER_SIZE 80</span>
+<span class="cp">#define MAX_REMEMBERED_LINES_COUNT 100</span>
+<span class="cp">#define MAX_TOKEN_SIZE 80</span>
+
+<span class="k">const</span> <span class="kt">int</span> <span class="n">SHORT_ANSWER_LENGTH</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">VERY_SHORT_ANSWER_LENGTH</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+
+
+<span class="cm">/* GENERIC RESPONSES</span>
+<span class="cm"> ********************/</span>
+
+<span class="kt">void</span> <span class="nf">print_generic_response</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">responses</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;How are you this beautiful day?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;Did you have a happy childhood?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;Did you hate your father?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;Did you have a good friend?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;Did you like your friend?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;What do you think about your friendship?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;I&#39;m not sure I understand.&quot;</span><span class="p">,</span>
+        <span class="nb">NULL</span>
+    <span class="p">};</span>
+
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">next</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">responses</span><span class="p">[</span><span class="n">next</span><span class="p">])</span> <span class="n">next</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    
+    <span class="n">puts</span><span class="p">(</span><span class="n">responses</span><span class="p">[</span><span class="n">next</span><span class="o">++</span><span class="p">]);</span>
+<span class="p">}</span>
+
+
+<span class="cm">/* FABRICATED ANSWERS</span>
+<span class="cm"> *********************/</span>
+
+<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">lookup_fabricated_answer</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">token</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">answers</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;no&quot;</span><span class="p">,</span> <span class="s">&quot;Tell me more about the detail.&quot;</span><span class="p">,</span>
+        <span class="s">&quot;yes&quot;</span><span class="p">,</span> <span class="s">&quot;Tell me more about the detail.&quot;</span><span class="p">,</span>
+        <span class="s">&quot;fuck&quot;</span><span class="p">,</span> <span class="s">&quot;Don&#39;t be so rude again!&quot;</span><span class="p">,</span>
+        <span class="s">&quot;shit&quot;</span><span class="p">,</span> <span class="s">&quot;Don&#39;t be so rude again!&quot;</span><span class="p">,</span>
+        <span class="s">&quot;you&quot;</span><span class="p">,</span> <span class="s">&quot;Let&#39;s not talk about me.&quot;</span><span class="p">,</span>
+        <span class="s">&quot;think&quot;</span><span class="p">,</span> <span class="s">&quot;Why do you think that?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;hate&quot;</span><span class="p">,</span> <span class="s">&quot;So you hate something -- tell me more.&quot;</span><span class="p">,</span>
+        <span class="s">&quot;what&quot;</span><span class="p">,</span> <span class="s">&quot;Why do you ask?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;want&quot;</span><span class="p">,</span> <span class="s">&quot;Why do you want that?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;need&quot;</span><span class="p">,</span> <span class="s">&quot;We all need many things -- is this special?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;why&quot;</span><span class="p">,</span> <span class="s">&quot;Remember, therapy is good for you.&quot;</span><span class="p">,</span>
+        <span class="s">&quot;know&quot;</span><span class="p">,</span> <span class="s">&quot;How do you know that?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;murder&quot;</span><span class="p">,</span> <span class="s">&quot;I don&#39;t like killing.&quot;</span><span class="p">,</span>
+        <span class="s">&quot;kill&quot;</span><span class="p">,</span> <span class="s">&quot;It is wrong to kill.&quot;</span><span class="p">,</span>
+        <span class="s">&quot;jerk&quot;</span><span class="p">,</span> <span class="s">&quot;Don&#39;t ever call me a jerk!&quot;</span><span class="p">,</span>
+        <span class="s">&quot;can&#39;t&quot;</span><span class="p">,</span> <span class="s">&quot;Don&#39;t be negative -- be positive.&quot;</span><span class="p">,</span>
+        <span class="s">&quot;failure&quot;</span><span class="p">,</span> <span class="s">&quot;Strive for success.&quot;</span><span class="p">,</span>
+        <span class="s">&quot;never&quot;</span><span class="p">,</span> <span class="s">&quot;Don&#39;t be negative -- be positive.&quot;</span><span class="p">,</span>
+        <span class="s">&quot;unhappy&quot;</span><span class="p">,</span> <span class="s">&quot;Why are you unhappy?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;beautiful&quot;</span><span class="p">,</span> <span class="s">&quot;I&#39;m sure you like her, don&#39;t you?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;like&quot;</span><span class="p">,</span> <span class="s">&quot;Why do you like that?&quot;</span><span class="p">,</span>
+        <span class="s">&quot;love&quot;</span><span class="p">,</span> <span class="s">&quot;Remember, love everything what you love.&quot;</span><span class="p">,</span>
+        <span class="nb">NULL</span>
+    <span class="p">};</span>
+
+    <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">answers</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="n">answers</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">token</span><span class="p">))</span> <span class="k">return</span> <span class="n">answers</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+        <span class="n">index</span> <span class="o">+=</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="cm">/* REMEMBERED LINES</span>
+<span class="cm"> *******************/</span>
+
+<span class="kt">char</span> <span class="n">remembered_lines</span><span class="p">[</span><span class="n">MAX_REMEMBERED_LINES_COUNT</span><span class="p">][</span><span class="n">MAX_INPUT_BUFFER_SIZE</span><span class="p">];</span>
+<span class="kt">int</span> <span class="n">next_remembered_line_enter_index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">next_remembered_line_return_index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">remember_line</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">line</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">next_remembered_line_enter_index</span> <span class="o">==</span> <span class="n">MAX_REMEMBERED_LINES_COUNT</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">next_remembered_line_enter_index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">strncpy</span><span class="p">(</span><span class="n">remembered_lines</span><span class="p">[</span><span class="n">next_remembered_line_enter_index</span><span class="p">],</span> <span class="n">line</span><span class="p">,</span> <span class="n">MAX_INPUT_BUFFER_SIZE</span><span class="p">);</span>
+    <span class="o">++</span><span class="n">next_remembered_line_enter_index</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">get_old_remembered_line</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">next_remembered_line_enter_index</span> <span class="o">!=</span> <span class="n">next_remembered_line_return_index</span><span class="p">)</span>  <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="n">next_remembered_line_return_index</span><span class="p">;</span>
+        <span class="o">++</span><span class="n">next_remembered_line_return_index</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">next_remembered_line_return_index</span> <span class="o">==</span> <span class="n">MAX_REMEMBERED_LINES_COUNT</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">next_remembered_line_return_index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">remembered_lines</span><span class="p">[</span><span class="n">result</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="nf">is_line_remebered</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">line</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">MAX_REMEMBERED_LINES_COUNT</span><span class="p">;</span> <span class="o">++</span><span class="n">index</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">remembered_lines</span><span class="p">[</span><span class="n">index</span><span class="p">]))</span>  <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="cm">/*</span>
+<span class="cm"> * TOKENIZER</span>
+<span class="cm"> ************/</span>
+
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">position_in_input</span><span class="p">;</span>
+
+<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">next_token</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="k">static</span> <span class="kt">char</span> <span class="n">token</span><span class="p">[</span><span class="n">MAX_TOKEN_SIZE</span><span class="p">];</span>
+    
+    <span class="kt">char</span> <span class="o">*</span><span class="n">position_in_token</span> <span class="o">=</span> <span class="n">token</span><span class="p">;</span>
+    
+    <span class="cm">/* skip spaces */</span>
+    <span class="k">while</span> <span class="p">(</span><span class="o">*</span><span class="n">position_in_input</span> <span class="o">&amp;&amp;</span> <span class="o">*</span><span class="n">position_in_input</span> <span class="o">&lt;=</span> <span class="sc">&#39; &#39;</span><span class="p">)</span> <span class="o">++</span><span class="n">position_in_input</span><span class="p">;</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="o">!*</span><span class="n">position_in_input</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// end of input</span>
+        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">strchr</span><span class="p">(</span><span class="s">&quot;.,;!?&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">position_in_input</span><span class="p">))</span> <span class="p">{</span> <span class="c1">// return punctuation</span>
+        <span class="o">*</span><span class="n">position_in_token</span><span class="o">++</span> <span class="o">=</span> <span class="o">*</span><span class="n">position_in_input</span><span class="o">++</span><span class="p">;</span>
+        <span class="o">*</span><span class="n">position_in_token</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">token</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// read word</span>
+    <span class="k">while</span> <span class="p">(</span><span class="o">*</span><span class="n">position_in_input</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">strchr</span><span class="p">(</span><span class="s">&quot; </span><span class="se">\n\r</span><span class="s">.,;?!&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">position_in_input</span><span class="p">))</span>  <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">position_in_token</span> <span class="o">!=</span> <span class="n">token</span> <span class="o">+</span> <span class="n">MAX_TOKEN_SIZE</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+            <span class="o">*</span><span class="n">position_in_token</span><span class="o">++</span> <span class="o">=</span> <span class="n">tolower</span><span class="p">(</span><span class="o">*</span><span class="n">position_in_input</span><span class="o">++</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="o">++</span><span class="n">position_in_input</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="o">*</span><span class="n">position_in_token</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">token</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="cm">/*</span>
+<span class="cm"> * CREATE THE DOCTOR&#39;S RESPONE</span>
+<span class="cm"> ******************************/</span>
+
+<span class="kt">void</span> <span class="nf">respond</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">input</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">strlen</span><span class="p">(</span><span class="n">input</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">VERY_SHORT_ANSWER_LENGTH</span><span class="p">)</span>  <span class="p">{</span> <span class="c1">// short answer</span>
+        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">remembered</span> <span class="o">=</span> <span class="n">get_old_remembered_line</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">remembered</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;You just said: %s&quot;</span><span class="p">,</span> <span class="n">remembered</span><span class="p">);</span>
+            <span class="n">puts</span><span class="p">(</span><span class="s">&quot;Tell me more.&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="n">print_generic_response</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">is_line_remebered</span><span class="p">(</span><span class="n">input</span><span class="p">))</span>  <span class="p">{</span>
+        <span class="n">puts</span><span class="p">(</span><span class="s">&quot;Stop repeating yourself!&quot;</span><span class="p">);</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">strlen</span><span class="p">(</span><span class="n">input</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">SHORT_ANSWER_LENGTH</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// remember line</span>
+        <span class="n">remember_line</span><span class="p">(</span><span class="n">input</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">position_in_input</span> <span class="o">=</span> <span class="n">input</span><span class="p">;</span>
+    
+    <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">token</span> <span class="o">=</span> <span class="n">next_token</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">token</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">fabricated_answer</span> <span class="o">=</span> <span class="n">lookup_fabricated_answer</span><span class="p">(</span><span class="n">token</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">fabricated_answer</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">puts</span><span class="p">(</span><span class="n">fabricated_answer</span><span class="p">);</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// comment of last resort</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">strlen</span><span class="p">(</span><span class="n">input</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">SHORT_ANSWER_LENGTH</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">puts</span><span class="p">(</span><span class="s">&quot;It&#39;s seem intersting, tell me more ...&quot;</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">puts</span><span class="p">(</span><span class="s">&quot;Tell me more ...&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="n">input_buffer</span><span class="p">[</span><span class="n">MAX_INPUT_BUFFER_SIZE</span><span class="p">];</span>
+    <span class="n">print_generic_response</span><span class="p">();</span>
+    <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;: &quot;</span><span class="p">);</span>
+        <span class="n">fgets</span><span class="p">(</span><span class="n">input_buffer</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">input_buffer</span><span class="p">),</span> <span class="n">stdin</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">strnstr</span><span class="p">(</span><span class="n">input_buffer</span><span class="p">,</span> <span class="s">&quot;bye&quot;</span><span class="p">,</span> <span class="n">MAX_INPUT_BUFFER_SIZE</span><span class="p">)</span> <span class="o">==</span> <span class="n">input_buffer</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">puts</span><span class="p">(</span><span class="s">&quot;Your bill will be mailed to you.&quot;</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">respond</span><span class="p">(</span><span class="n">input_buffer</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+</div>
+<hr/>
+<h3>Comments</h3>
+<p>Would you like to correct, expand or correct an entry? Please
+send an e-mail to
+<a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a>.
+I&nbsp;will gladly publish interesting contributions on this site.
+
+    </div>
+    <div class="footer"><div class="indent">
+      &copy; 2015 Timm Knape &ndash; 
+      <a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a> &ndash; 
+      <a href="http://www.kna-st.de/contact.html">Contact</a> &ndash;
+      <a href="http://www.kna-st.de/about.html">About/Impressum</a>
+    </div></div>
+  </body>
+</html>

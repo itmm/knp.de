@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>knp.de &ndash; Archiv: Modellierung von Tonhöhen</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <div class="header"><div class="indent">
+      <h1 class="title"><a href="/">knp.de</a></h1>
+      &ndash; Archiv: Modellierung von Tonhöhen
+    </div></div>
+    <div class="indent content">
+          <h2>Archiv: Modellierung von Tonhöhen</h2>
+<p class="meta">04/06/2014</p>
+<div class="post">
+<blockquote>
+    What are you armed with?<br />
+    <i>(Douglas&nbsp;N.&nbsp;Adams)</i>
+</blockquote>
+
+<p>Archiv-Einträge haben sich aus älteren Posts ergeben. Sie erscheinen hier in einem neuen Layout.</p>
+
+<h3>Physikalische Töne</h3>
+
+<p>Aus physikalischer Sicht, kann ein Ton als eine Welle mit einer Wellenlänge beschrieben werden. Unterschiedliche Wellenlängen entsprechen unterschiedliche Töne.</p>
+
+<p>Als abstrakte Approximation verwenden wir statt dessen eine Sinus-Funktion. Für die Wellenlänge <code>l</code> ergibt sich</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Math</span><span class="o">.</span><span class="na">sin</span><span class="o">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">l</span> <span class="o">/</span> <span class="o">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">PI</span><span class="o">))</span>
+</code></pre></div>
+<p>Die folgende Abbildung zeigt eine Tonschwingung.</p>
+
+<p><img src="/images/welle.png" alt="Tonschwingung"></p>
+
+<p>Anstatt der Wellenlänge <code>l</code>kann auch die Frequenz <code>f</code> verwendet werden, denn es gilt:</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">l</span> <span class="o">==</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">f</span>
+</code></pre></div>
+<p>Damit ergibt sich als Sinus-Funktion</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Math</span><span class="o">.</span><span class="na">sin</span><span class="o">(</span><span class="n">x</span> <span class="o">/</span> <span class="o">(</span><span class="n">f</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">PI</span><span class="o">))</span>
+</code></pre></div>
+<p>Damit ergibt sich eine erste Klasse für die Modellierung von physikalischen Tönen:</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">PhysikalischerTon</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">_frequenz</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">PhysikalischerTon</span><span class="o">(</span><span class="kt">double</span> <span class="n">f</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">_frequenz</span> <span class="o">=</span> <span class="n">f</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">double</span> <span class="nf">frequenz</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">_frequenz</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">double</span> <span class="nf">wellenLaenge</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">_frequenz</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<h3>Logische Töne</h3>
+
+<p>Für die Harmonielehre beschränken wir uns auf abzählbar viele Töne. Damit ergibt sich die folgende Klasse für einen Ton:</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Ton</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">_position</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">Ton</span><span class="o">(</span><span class="kt">int</span> <span class="n">p</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="n">p</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">position</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">_position</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>Zu jedem Ton kann ein physikalischer Ton gefunden werden. Die ersten dreizehn Töne sind:</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">frequenz</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="mf">440.00</span><span class="o">;</span>
+<span class="n">frequenz</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="mf">466.16</span><span class="o">;</span>
+<span class="n">frequenz</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="mf">493.88</span><span class="o">;</span>
+<span class="n">frequenz</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span> <span class="o">=</span> <span class="mf">523.25</span><span class="o">;</span>
+<span class="n">frequenz</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span> <span class="o">=</span> <span class="mf">554.37</span><span class="o">;</span>
+<span class="n">frequenz</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span> <span class="o">=</span> <span class="mf">587.33</span><span class="o">;</span>
+<span class="n">frequenz</span><span class="o">[</span><span class="mi">6</span><span class="o">]</span> <span class="o">=</span> <span class="mf">622.25</span><span class="o">;</span>
+<span class="n">frequenz</span><span class="o">[</span><span class="mi">7</span><span class="o">]</span> <span class="o">=</span> <span class="mf">659.26</span><span class="o">;</span>
+<span class="n">frequenz</span><span class="o">[</span><span class="mi">8</span><span class="o">]</span> <span class="o">=</span> <span class="mf">698.46</span><span class="o">;</span>
+<span class="n">frequenz</span><span class="o">[</span><span class="mi">9</span><span class="o">]</span> <span class="o">=</span> <span class="mf">739.99</span><span class="o">;</span>
+<span class="n">frequenz</span><span class="o">[</span><span class="mi">10</span><span class="o">]</span> <span class="o">=</span> <span class="mf">783.99</span><span class="o">;</span>
+<span class="n">frequenz</span><span class="o">[</span><span class="mi">11</span><span class="o">]</span> <span class="o">=</span> <span class="mf">830.61</span><span class="o">;</span>
+<span class="n">frequenz</span><span class="o">[</span><span class="mi">12</span><span class="o">]</span> <span class="o">=</span> <span class="mf">880.00</span><span class="o">;</span>
+</code></pre></div>
+<blockquote>
+    Quelle: <a href="http://de.wikipedia.org/wiki/Bild:Glstufstimmung.png">Wikipedia</a>
+</blockquote>
+
+<p>Der dreizehnte Ton hat genau die doppelte Frequenz von den ersten Ton. Analog sind alle weiteren Töne Vielfache von den hier abgebildeten Tönen. Jeweils zwölf aufeinander folgende Töne bilden eine <em>Oktave</em>. Die Töne der nächsten Oktave haben genau die doppelte Frequenz.</p>
+
+<p>Dies ergibt eine genauere Verteilung der Frequenzen. Sie müssen gleichmäßig so angeordnet werden, dass mit zwölf Tönen eine Verdopplung stattfindet.</p>
+
+<p>Es ergibt sich die folgende Klasse:</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">TonUmwandler</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">PhysikalischerTon</span> <span class="nf">umwandeln</span><span class="o">(</span><span class="n">Ton</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">PhysikalischerTon</span> <span class="o">(</span>
+            <span class="n">Math</span><span class="o">.</span><span class="na">pow</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">t</span><span class="o">.</span><span class="na">position</span><span class="o">()</span> <span class="o">/</span> <span class="mf">12.0</span><span class="o">)</span> <span class="o">*</span> <span class="mf">440.00</span>
+        <span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>Die folgende Abbildung zeigt den Zusammenhang zwischen den Tönen und ihrer Frequenz:</p>
+
+<p><img src="/images/tonhoehe.png" alt="Tonhöhen"></p>
+
+</div>
+<hr/>
+<h3>Comments</h3>
+<p>Would you like to correct, expand or correct an entry? Please
+send an e-mail to
+<a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a>.
+I&nbsp;will gladly publish interesting contributions on this site.
+
+    </div>
+    <div class="footer"><div class="indent">
+      &copy; 2015 Timm Knape &ndash; 
+      <a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a> &ndash; 
+      <a href="http://www.kna-st.de/contact.html">Contact</a> &ndash;
+      <a href="http://www.kna-st.de/about.html">About/Impressum</a>
+    </div></div>
+  </body>
+</html>
