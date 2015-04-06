@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>knp.de &ndash; Simple Mazes with Mathematica</title>
+		<meta name="viewport" content="width=device-width">
+		<link rel="stylesheet" href="../../../css/main.css">
+		<style type="text/css" media="screen">
+			.slide {
+				background-image: url(./maze.jpg);
+				background-size: cover;
+				border-radius: 8px;
+				background-clip: content-box;
+				width: 320pt;
+				height: 240pt;
+				display: table;
+				color: #eed;
+				font-size: 120%;
+			}
+			
+			div.entry:nth-child(odd) .slide {
+			}
+			div.entry:nth-child(even) .slide {
+				margin: 0 0 0 auto;
+			}
+			.slide pre {
+				background-color: transparent;
+				border: none;
+			}
+			.slide .vc {
+				display: table-cell;
+				vertical-align: middle;
+			}
+			.slide .hc {
+				text-align: center;
+			}
+			.slide h1 {
+				font-family: "Helvetica Neue", sans-serif;
+				font-weight: 100;
+				font-size: 160%;
+				text-align: center;
+			}
+			.slide h1 a {
+				color: #eed;
+			}
+			.slide h2 {
+				color: #eed;
+				text-align: center;
+			}
+			.slide .box {
+				display: table;
+				margin: 20px auto 20px auto;
+			}
+			.note {
+				width: 260pt;
+				margin: 20px 0 20px 0;
+			}
+			div.entry:nth-child(odd) .note {
+				float: right;
+				text-align: right;				
+			}
+			div.entry:nth-child(even) .note {
+				float: left;
+				text-align: left;
+			}
+			.entry {
+				margin: 20pt 0 20pt 0;
+				clear: both;
+			}
+		</style>
+	</head>
+	<body>
+	    <div class="header"><div class="indent">
+			<h1 class="title"><a href="../../../">knp.de</a></h1> &ndash; Simple Mazes with Mathematica
+		</div></div>
+		<div class="indent content">
+			<h2>Simple Mazes with Mathematica</h2>
+			<p class="meta">04/06/2015</p>
+			<div class="post">
+				<div class="entry">
+					<div class="note">
+						<p>This post is the start of a series of posts. It shows how you can draw amazing mazes with Mathematica.</p>
+					</div>
+					<div class="slide"><div class="vc">
+						<h1>Simple Mazes</h1>
+					</div></div>
+				</div>
+				<div class="entry">
+					<div class="note">
+						<p>It uses algorithms from the great book
+							<a href="http://www.amazon.de/Mazes-Programmers-Twisty-Little-Passages/dp/1680500554/ref=sr_1_1?ie=UTF8&qid=1428327122&amp;tag=knpde-21" rel="nofollow" target="_blank">Mazes for Programmers</a>
+							by Jamis Buck.
+						</p>
+						<p>
+							It is currently in beta but can be bought from <a href="http://www.pragprog.com" rel="nofollow" target="_blank">The Pragmatic Bookshelf</a>.
+						</p>
+						<p>
+							This time we will start with the Binary Tree Algorithm.
+						</p>
+					</div>
+					<div class="slide"><div class="vc">
+						<h1><a href="http://www.amazon.de/Mazes-Programmers-Twisty-Little-Passages/dp/1680500554/ref=sr_1_1?ie=UTF8&qid=1428327122&amp;tag=knpde-21" rel="nofollow" target="_blank">Mazes for Programmers</a></h1>
+						<h2>by Jamis Buck</h2>
+					</div></div>
+				</div>
+				
+				<h3>The Binary Tree Algorithm</h3>
+					
+				<div class="entry">
+					<div class="note">
+						<p>Each cell contains two bits to signal, if there is a wall to the right or at top.</p>
+					</div>
+					<div class="slide"><div class="vc hc">
+						<img src="grid.png" style="height: 200pt;" alt="walls on a cell">
+					</div></div>
+				</div>
+				<div class="entry">
+					<div class="note">
+						<p>Every cell chooses at random, if it should have a right or top wall.</p>
+					</div>
+					<div class="slide"><div class="vc">
+						<pre>inner[c_, r_] :=
+  Table[
+    RandomInteger[] + 1,
+    {c}, {r}
+  ]</pre>
+					</div></div>
+				</div>
+				<div class="entry">
+					<div class="note">
+						<p>Only the topmost and rightmost cells have no walls.</p>
+						<p>If you want to know why this works, please look at the book.</p>
+					</div>
+					<div class="slide"><div class="vc">
+						<pre>binaryTreeMaze[c_, r_] :=
+  Append[
+    Map[
+      Append[#, 0] &,
+      inner[c - 1, r - 1]
+    ],
+    Table[0, {r}]
+  ]</pre>
+					</div></div>
+				</div>
+				<div class="entry">
+					<div class="note">
+						<p>The result is mirrored, because the coordinate system in Mathematica increases from bottom to top.</p>
+					</div>
+					<div class="slide"><div class="vc">
+						<pre>{
+ {2, 2, 2, 1, 0},
+ {1, 1, 1, 1, 0},
+ {1, 2, 1, 2, 0},
+ {2, 2, 1, 2, 0},
+ {0, 0, 0, 0, 0}
+}</pre>
+					</div></div>
+				</div>
+				
+				<h3>Drawing the maze</h3>
+					
+				<div class="entry">
+					<div class="note">
+						<p>First we need methods to generate the lines for the walls.</p>
+					</div>
+					<div class="slide"><div class="vc">
+						<pre>rw[x_, y_] :=
+  Line[{{x, y - 1},
+    {x, y}}];
+  
+tw[x_, y_] :=
+  Line[{{x - 1, y},
+    {x, y}}];
+</pre>
+					</div></div>
+				</div>
+				<div class="entry">
+					<div class="note">
+						<p>Then we have a method, that creates the lines for any cell.</p>
+					</div>
+					<div class="slide"><div class="vc">
+						<pre>lineify[v_, p_] :=
+  Switch[v, 
+   0, {}, 
+   1, {Apply[rw, p]}, 
+   2, {Apply[tw, p]},
+   3, {Apply[rw, p],
+       Apply[tw, p]}
+   ];</pre>
+					</div></div>
+				</div>
+				<div class="entry">
+					<div class="note">
+						<p>We can apply this function to each cell.</p>
+					</div>
+					<div class="slide"><div class="vc">
+						<pre>conv[m_] :=
+  Flatten[
+    MapIndexed[
+      lineify, m, {2}
+    ]
+  ]</pre>
+					</div></div>
+				</div>
+				<div class="entry">
+					<div class="note">
+						<p>To draw a box around the maze, we need its width and height.</p>
+					</div>
+					<div class="slide"><div class="vc">
+						<pre>w[m_] := Length[m];
+h[m_] := Length[m[[1]]];</pre>
+					</div></div>
+				</div>
+				<div class="entry">
+					<div class="note">
+						<p>Putting it all together, the following code draws the maze.</p>
+					</div>
+					<div class="slide"><div class="vc">
+						<pre>drawMaze[m_] :=
+  Graphics[Append[
+    conv[m],
+    Line[{{0, 0},
+      {w[m], 0},
+      {w[m], h[m]},
+      {0, h[m]}, {0, 0}}]
+    ]
+  ]]</pre>
+					</div></div>
+				</div>
+				<div class="entry">
+					<div class="note">
+						<p>Here is the result.</p>
+					</div>
+					<div class="slide" style="background-image: url(./result.png); background-color: #062"></div>
+				</div>
+			</div>
+
+			<hr/>
+			
+			<h3>Comments</h3>
+			
+			<p>Would you like to expand or correct an entry?
+			Please send an e-mail to
+			<a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a>.
+			I&nbsp;will gladly publish interesting contributions on this site.</p>
+
+		</div>
+		<div class="footer"><div class="indent">
+			&copy; 2015 Timm Knape &ndash; 
+			<a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a> &ndash; 
+			<a href="http://www.kna-st.de/contact.html">Contact</a> &ndash;
+			<a href="http://www.kna-st.de/about.html">About/Impressum</a>
+		</div></div>
+ 	</body>
+</html>
