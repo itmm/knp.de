@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>knp.de &ndash; Raspberry Pi Installation</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="../../../css/syntax.css">
+    <link rel="stylesheet" href="../../../css/main.css">
+  </head>
+  <body>
+    <div class="header"><div class="indent">
+      <h1 class="title"><a href="/">knp.de</a></h1>
+      &ndash; Swift 2 als TimeMachine
+    </div></div>
+    <div class="indent content">
+          <h2>Swift 2 als TimeMachine</h2>
+<p class="meta">21.06.2015</p>
+<div class="post">
+
+<p>Kommt Ihnen die Entwicklung von Swift 2 auch ein bisschen so vor, wie eine Reise in die Vergangenheit? Als Apple die neue Programmiersprache im Juni 2014 vorstellte, wirkte sie noch ziemlich unfertig. Die mehreren Jahre Entwicklungszeit sah man ihr nicht an. Sie erschien eher, wie das Ergebnis eines durchprogrammierten Wochenendes mit zu wenig Schlaf.</p>
+<p>Sie konnte ihre Nähe zu Java nicht verbergen. Gab es doch jetzt endlich wieder <code>NullPointerException</code>s, da sich Optionals nicht stringent aus den Objective-C Headern herleiten ließen. Dem fiel ein mächtiges Konzept der Vorgängersprache zum Opfer, das für mich beim Entwickeln eine Riesenhilfe war. Ich nenne es das „gutmütige <code>nil</code>“.</p>
+<p>Ich glaube, schon in Smalltalk konnte man auf dem <code>nil</code>-Zeiger jede Methode aufrufen und das Ergebnis war auch wieder <code>nil</code>. Oder <code>0</code> oder <code>NO</code>, wenn man das Ergebnis einen anderen Datentyp hatte. Das erspart viele Abfragen. Verglichen mit Java und auch mit Swift war der Code kompakter, übersichtlicher und besser lesbar. Anstatt mit den Optionals auf diesen Komfort zu verzichten, hätte man ihn noch ausbauen können. Wenn die Fast Enumeration auch mit <code>nil</code> als Container funktionieren würde, oder bei Zugriffen in ein Array mit nicht vorhandenen Index auch einfach <code>nil</code> zurück geliefert werden würde, könnten weitere umständliche Prüfungen entfallen.</p>
+<p>Mit Swift 2, dass auf der diesjährigen Entwicklerkonferenz von Apple vorgestellt wurde, hat man sich weiter hin zu Java entwickelt. Und zu Perl! Warum gibt es bei <code>if let</code>-Konstrukten noch ein optionales <code>where</code>? Warum werden <code>try</code>, <code>guard</code> und <code>defer</code> mit völlig unintuitiven Semantiken eingeführt? Es gibt wieder ein zusätzliches Exception-Handling mit versteckten Variablen. Es scheint als habe Apple versucht, es so vielen Entwicklern wie möglich recht zu machen. Jede Idee wurde aufgenommen, wenn sich damit ein paar Tastenanschläge einsparen lassen. Das Ergebnis ist keine runde Programmiersprache, sondern Stückwerk. Swift ist durch die vielen überlappenden Features schwer zu erlernen, zumal manche Klimmzüge in der Vergangenheit bei Objective-C begründet liegen.</p>
+<p>Objective-C hat auch seine Macken, die hauptsächlich auf die C-Herkunft zurückzuführen sind. Präprozessor und die Basis-Datentypen machen einem das Leben schwerer als notwendig. Ich muss jedes Mal nachschlagen, wenn eine Variable oder ein Argument ein Funktionszeiger oder ein Block ist. Aber wenn man möchte, hat man direkten Zugriff auf den Prozessor sogar mit Inline-Assembler.</p>
+<p>Die Funktionalen Aspekte von Swift reizen mich als alten Scheme-Liebhaber natürlich. Aber ich weiß nicht, ob sie reichen, wieder zu Java zurückzuschreiten. Wie eine Reise in die Vergangenheit kommen mir die neuen Features vor. Dabei werden sie gefeiert, als wären sie die nächste Entwicklungsstufe nach der objektorientierten Programmierung. Vieles sind nur Fehlerbehebungen des ersten Aufschlags. Ist Objective-C schon so weit weg aus unserer Wahrnehmung gerückt? Oder Smalltalk? Oder Scheme? Type-Inference gibt es auch in C++, in Haskell und in Oracles PL/SQL.</p>
+<p>Ich hätte mir mehr Struktur gewünscht. Dass ich dem Sourcecode entnehmen kann, woher ein Bezeichner kommt. Durch explizite Imports würden sich auch die Bauzeiten reduzieren, da nicht für die Übersetzung einer Datei alle Dateien gelesen werden müssten (es könnte ja eine globale Variable darin definiert werden).</p>
+<p>Ich bin enttäuscht. Apple hätte das Zeug, eine große neue Sprache einzuführen. Leider verspielen sie ihr Potential und liefern nur Durchschnitt. Immerhin erhalten nun andere Sprachendesigner eine Chance, vor der Übermacht von Java und C# sichtbarer zu werden. Denn sicherlich wird Swift sich Anteile von den beiden Giganten holen. Vielleicht wird die Programmierlandschaft etwas vielfältiger. Das wäre in jedem Fall zu begrüßen.</p>
+
+<hr/>
+<h3>Kommentare</h3>
+<p>Haben Sie Ergänzungen oder Korrekturvorschläge zu dem Eintrag? Bitte senden Sie eine E-Mail an
+<a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a>.
+Gerne veröffentliche ich interessante Beiträge zu diesem Artikel.
+
+    </div>
+    <div class="footer"><div class="indent">
+      &copy; 2015 Timm Knape &ndash; 
+      <a href="ma&#105;lto&#58;timm&#64;knp&#46;de">timm&#64;knp&#46;de</a> &ndash; 
+      <a href="http://www.kna-st.de/contact.html">Kontakt</a> &ndash;
+      <a href="http://www.kna-st.de/about.html">Impressum</a>
+    </div></div>
+  </body>
+</html>
